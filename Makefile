@@ -14,12 +14,12 @@ all: linear deeds apply
 
 deeds: $(SOURCE1) Makefile
 	g++ $(SOURCE1) -I src -lz -o deedsBCV -std=c++11 $(OPT)
-    
+
 linear: $(SOURCE2) Makefile
 	g++ $(SOURCE2) -I src -lz -o linearBCV -std=c++11 $(OPT)
 
 apply: $(SOURCE3) Makefile
-    g++ $(SOURCE3) -I src -lz -o applyBCV -std=c++11 $(OPT)
+	g++ $(SOURCE3) -I src -lz -o applyBCV -std=c++11 $(OPT)
 
 
 clean:
