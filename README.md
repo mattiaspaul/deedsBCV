@@ -116,8 +116,9 @@ Dice:  69.4% (spleen), 62.5% (right kidney),  82.3% (left kidney),  30.8% (gallb
 
 AVERAGE DICE: 54.9%
 
-The visual example of false-colour overlay look quite reasonable:
-![Alt text](example_deeds.png?raw=true "overlay")
+The visual overlay of this example seems quite convincing:
+<img src="example_deeds.png" alt="overlay" style="width: 100px;"/>
+
 
 When the transformation is later required to warp another segmentation or scan, you can use the applyBCV executable:
 ```bash
