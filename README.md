@@ -27,7 +27,7 @@ The average run-time on a dual-core laptop is around 60 seconds for the nonlinea
 ```bash
 make
 ```
-The code requires a Unix-based system (Linux, OS X or Ubuntu-Bash in Win10), a g++ compiler and an installed zlib library. Optional but recommend are OpenMP support and SSE4.2 and AVX2 flags. In case you're CPU does have SIMD extensions try 
+The code requires a Unix-based system (Linux, OS X or Ubuntu-Bash in Win10), a g++ compiler and an installed zlib library. Optional but recommend are OpenMP support and SSE4.2 and AVX2 flags. In case your CPU does have SIMD extensions try 
 ```bash
 make SLOW=1
 ```
@@ -44,7 +44,7 @@ There are four binaries: deedsBCV (nonlinear registration), linearBCV (affine pr
 ### Parameters
 The registration method uses a contrast and modality-invariant similarity metric, based on binarised SSC descriptors as described in my MICCAI 2013 paper: "Towards Realtime Multimodal Fusion for Image-Guided Interventions Using Self-similarities".
 
-Importantly, the approach relies on a dense displacement search as detailed in my TMI paper: 'MRF-based deformable registration and ventilation estimation of lung CT' and performs several (usually five) iterations (on a single high-resolution) with different grid-spacings. These control-point spacings are by default defined as
+Importantly, the approach relies on a **dense displacement search** as detailed in my TMI paper: 'MRF-based deformable registration and ventilation estimation of lung CT' and performs several (usually five) iterations (on a single high-resolution) with different grid-spacings. These **control-point spacings are by default defined** as
 
  -G grid spacing for each level (default 8x7x6x5x4)
  
@@ -56,14 +56,12 @@ There are two more parameters, which specify the discrete search namely the radi
  
   -Q quantisation step (default 5x4x3x2x1)
   
- The product of these two numbers gives the maximum displacement for each level (in voxels). So if you e.g. expect deformations of about 40 voxels you could choose -L 8 and -Q 5 (for the first level). To keep memory and computational demand to reasonable levels, it is recommended to have similar numbers for -G and -L for each level.
+ The **product of these two numbers gives the maximum displacement for each level (in voxels)**. So if you e.g. expect deformations of about 40 voxels you could choose -L 8 and -Q 5 (for the first level). To keep memory and computational demand to reasonable levels, it is recommended to have similar numbers for -G and -L for each level.
  
 The affine/linear registration selects the optimal displacement for each control point and finds a robust transform using least trimmed squares. Afterwards, the images are warped and the procedure is repeat for all other levels.
 
+In the deformable registration, the neighbourhood relations of the control point grid are approximated using a minimum-spanning-tree to efficiently find a smooth displacement field given an additional registration parameter (which is set by default to 1.6) using the flag -a. It can be increased to obtain smoother transforms and decreased to make the registration more aggressive (but it's influence is generally moderate).
 
-In the deformable registration, the neighbourhood relations of the control point grid are approximated using a minimum-spanning-tree. A combinatorial optimisation (dynamic programming) finds the optimal, smooth displacement field given an additional registration parameter (which is set by default to 1.6) using the flag -a. It can be increased to obtain smoother transforms and decreased to make the registration more aggressive (but it's influence is generally moderate).
-
-It is always recommended to use the (default) symmetry constraint -s as it avoids foldings in the deformation field.
 
 
 ## Prerequisites to run example
