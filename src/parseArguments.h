@@ -1,4 +1,15 @@
-parameters parseCommandLine(int argc, char * const argv[]){
+char *realpathEx(const char *path, char *buff) {
+    char *home;
+    if (*path=='~' && (home = getenv("HOME"))) {
+        char s[PATH_MAX];
+        return realpath(strcat(strcpy(s, home), path+1), buff);
+    } else {
+        return realpath(path, buff);
+    }
+}
+
+
+void parseCommandLine(parameters& args,int argc, char * const argv[]){
     
     typedef pair<char,int> val;
     map<char,int> argin;
@@ -12,28 +23,38 @@ parameters parseCommandLine(int argc, char * const argv[]){
     argin.insert(val('Q',7));
     argin.insert(val('S',8));
     argin.insert(val('A',9));
+    argin.insert(val('R',10));
+    argin.insert(val('D',11));
 
     // parsing the input
     int requiredArgs=0;
-    char* fixedfile=new char[200];
-    char* movingfile=new char[200];
-    char* outputstem=new char[200];
-    char* movsegfile=new char[200];
-    char* affinefile=new char[200];
+    char* fixedfile=new char[PATH_MAX];
+    char* movingfile=new char[PATH_MAX];
+    char* outputstem=new char[PATH_MAX];
+    char* movsegfile=new char[PATH_MAX];
+    char* affinefile=new char[PATH_MAX];
+    char* deformedfile=new char[PATH_MAX];
 
     float alpha=1.6;
-    int maxlevel=5;
+    int maxlevel=args.levels;
     int num=maxlevel; int num2=maxlevel; int num3=maxlevel;
     bool s_set=false;
     int s_grid[10]={8,7,6,5,4,3,2,2,2,2};
     int s_search[10]={8,7,6,5,4,3,2,1,1};
     int s_quant[10]={5,4,3,2,1,1,1,1,1,1};
+    for(int i=0;i<maxlevel;i++){
+        s_grid[i]=args.grid_spacing[i];
+        s_search[i]=args.search_radius[i];
+        s_quant[i]=args.quantisation[i];
+    }
+    
     char levelstr[]="%dx%dx%dx%dx%dx%dx%dx%dx%dx%d";
     
     bool symmetric=true;
     bool segment=false;
     bool affine=false;
-
+    bool rigid=false;
+    
     for(int k=1;k<argc;k++){
         if(argv[k][0]=='-'){
             if(argin.find(argv[k][1])==argin.end()){
@@ -79,6 +100,14 @@ parameters parseCommandLine(int argc, char * const argv[]){
                         sprintf(affinefile,"%s",argv[k+1]);
                         affine=true;
                         break;
+                    case 10:
+                        rigid=atoi(argv[k+1]);
+                        break;
+                    case 11:
+                        sprintf(deformedfile,"%s",argv[k+1]);
+                        requiredArgs++;
+                        break;
+
                     default:
                         cout<<"Invalid option: "<<argv[k]<<" use -h for help\n";
                         break;
@@ -99,32 +128,47 @@ parameters parseCommandLine(int argc, char * const argv[]){
         printf("maxlevel=%d, #grid=%d, #search=%d, #quant=%d\n",maxlevel,num,num2,num3);
     }
     
+
+    
     //copy parameters into struct (and convert to strings/vectors)
-    struct parameters args;
-    string s1(fixedfile);
+    //replace potential tilde in filenames
+    char correctfile[PATH_MAX];
+    realpathEx(fixedfile,correctfile);
+    string s1(correctfile);
     args.fixed_file=s1;
-    string s2(movingfile);
+    realpathEx(movingfile,correctfile);
+    string s2(correctfile);
     args.moving_file=s2;
-    string s3(outputstem);
+    realpathEx(outputstem,correctfile);
+    string s3(correctfile);
     args.output_stem=s3;
-    string s4(movsegfile);
+    realpathEx(movsegfile,correctfile);
+    string s4(correctfile);
     args.moving_seg_file=s4;
-    string s5(affinefile);
+    realpathEx(affinefile,correctfile);
+    string s5(correctfile);
     args.affine_file=s5;
+    realpathEx(deformedfile,correctfile);
+    string s6(correctfile);
+    args.deformed_file=s6;
+
 
     args.alpha=alpha;
     args.levels=maxlevel;
     args.segment=segment;
     args.affine=affine;
     
+    args.grid_spacing.resize(maxlevel);
+    args.search_radius.resize(maxlevel);
+    args.quantisation.resize(maxlevel);
+    
     for(int i=0;i<maxlevel;i++){
-        args.grid_spacing.push_back(s_grid[i]);
-        args.search_radius.push_back(s_search[i]);
-        args.quantisation.push_back(s_quant[i]);
+        args.grid_spacing[i]=s_grid[i];
+        args.search_radius[i]=s_search[i];
+        args.quantisation[i]=s_quant[i];
         
     }
     
-    return args;
     
 }
 

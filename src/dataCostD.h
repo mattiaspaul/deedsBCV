@@ -252,8 +252,12 @@ void warpAffineS(short* warped,short* input,float* X,float* u1,float* v1,float* 
                 float z1=(float)i*X[8]+(float)j*X[9]+(float)k*X[10]+(float)X[11]+w1[i+j*m+k*m*n];
                 int x=round(x1); int y=round(y1);  int z=round(z1);
                 
-                
-                warped[i+j*m+k*m*n]=input[min(max(y,0),m-1)+min(max(x,0),n-1)*m+min(max(z,0),o-1)*m*n];
+                //if(y>=0&x>=0&z>=0&y<m&x<n&z<o){
+                    warped[i+j*m+k*m*n]=input[min(max(y,0),m-1)+min(max(x,0),n-1)*m+min(max(z,0),o-1)*m*n];
+                //}
+                //else{
+                //    warped[i+j*m+k*m*n]=0;
+                //}
             }
         }
     }

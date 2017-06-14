@@ -12,6 +12,7 @@
 #include <x86intrin.h>
 #include <pthread.h>
 #include <thread>
+#include <cstddef>   
 #include "zlib.h"
 #include <sys/stat.h>
 
@@ -34,10 +35,10 @@ struct mind_data{
 };
 
 struct parameters{
-    float alpha; int levels; bool segment,affine;
+    float alpha; int levels; bool segment,affine,rigid;
     vector<int> grid_spacing; vector<int> search_radius;
     vector<int> quantisation;
-    string fixed_file,moving_file,output_stem,moving_seg_file,affine_file;
+    string fixed_file,moving_file,output_stem,moving_seg_file,affine_file,deformed_file;
 };
 
 #include "imageIOgzType.h"
@@ -68,13 +69,44 @@ int main (int argc, char * const argv[]) {
         cout<<"=============================================================\n";
         return 1;
     }
-    parameters args=parseCommandLine(argc, argv);
+    parameters args;
+    //defaults
+    args.grid_spacing={8,7,6,5,4};
+    args.search_radius={8,7,6,5,4};
+    args.quantisation={5,4,3,2,1};
+    args.levels=5;
+    parseCommandLine(args, argc, argv);
 
-    size_t split_fixed=args.fixed_file.find_last_of("/");
-    size_t split_moving=args.moving_file.find_last_of("/");
+    size_t split_fixed=args.fixed_file.find_last_of("/\\");
+    if(split_fixed==string::npos){
+        split_fixed=-1;
+    }
+    size_t split_moving=args.moving_file.find_last_of("/\\");
+    if(split_moving==string::npos){
+        split_moving=-1;
+    }
+    
+    
+    if(args.fixed_file.substr(args.fixed_file.length()-2)!="gz"){
+        cout<<"images must have nii.gz format\n";
+        return -1;
+    }
+    if(args.moving_file.substr(args.moving_file.length()-2)!="gz"){
+        cout<<"images must have nii.gz format\n";
+        return -1;
+    }
 
     cout<<"Starting registration of "<<args.fixed_file.substr(split_fixed+1)<<" and "<<args.moving_file.substr(split_moving+1)<<"\n";
+    cout<<"=============================================================\n";
+
+    string outputflow;
+    outputflow.append(args.output_stem);
+    outputflow.append("_displacements.dat");
+    string outputfile;
+    outputfile.append(args.output_stem);
+    outputfile.append("_deformed.nii.gz");
     
+                      
     //READ IMAGES and INITIALISE ARRAYS
     
     timeval time1,time2,time1a,time2a;
@@ -89,9 +121,15 @@ int main (int argc, char * const argv[]) {
 	char* header=new char[352];
     
 	readNifti(args.fixed_file,im1b,header,M,N,O,P);
+    image_m=M; image_n=N; image_o=O;
+
 	readNifti(args.moving_file,im1,header,M,N,O,P);
 	
-	image_m=M; image_n=N; image_o=O;
+
+    if(M!=image_m|N!=image_n|O!=image_o){
+        cout<<"Inconsistent image sizes (must have same dimensions)\n";
+        return -1;
+    }
 	
 	int m=image_m; int n=image_n; int o=image_o; int sz=m*n*o;
     
@@ -110,8 +148,12 @@ int main (int argc, char * const argv[]) {
     float* X=new float[16];
     
     if(args.affine){
-        
-        cout<<"Reading affine matrix file: "<<args.affine_file<<"\n";
+        size_t split_affine=args.affine_file.find_last_of("/\\");
+        if(split_affine==string::npos){
+            split_affine=-1;
+        }
+
+        cout<<"Reading affine matrix file: "<<args.affine_file.substr(split_affine+1)<<"\n";
         ifstream matfile;
         matfile.open(args.affine_file);
         for(int i=0;i<4;i++){
@@ -124,7 +166,7 @@ int main (int argc, char * const argv[]) {
 
     }
     else{
-        cout<<"Starting with idenity transform.\n";
+        cout<<"Starting with identity transform.\n";
         fill(X,X+16,0.0f);
         X[0]=1.0f; X[1+4]=1.0f; X[2+8]=1.0f; X[3+12]=1.0f;
     }
@@ -134,34 +176,15 @@ int main (int argc, char * const argv[]) {
         
     }
     
-	
-    // if SEGMENTATION of moving image is provided APPLY SAME TRANSFORM
-    if(args.segment){
-        short* seg2;
-        readNifti(args.moving_seg_file,seg2,header,M,N,O,P);
+    //PATCH-RADIUS FOR MIND/SSC DESCRIPTORS
 
+    vector<int> mind_step;
+    for(int i=0;i<args.quantisation.size();i++){
+        mind_step.push_back(floor(0.5f*(float)args.quantisation[i]+1.0f));
     }
-    return 0;
-}
-/*
+    printf("MIND STEPS, %d, %d, %d, %d, %d \n",mind_step[0],mind_step[1],mind_step[2],mind_step[3],mind_step[4]);
 
-
- 
-    
-	//==========================================================================================
-	//==========================================================================================
-	//IMPORTANT SETTINGS FOR CONTROL POINT SPACING AND LABEL SPACE (default 5 levels)
-    int maxlevel=5;
-    int label_hw[]={ 8,7,6,5,4};//6,5,4,3,2};//{5,3};//{ 6,5,4,3,2};
-	//half-width of search space L={±0,±1,..,label_hw}^3 * label_quant
 	
-    int grid_step[]={ 8,7,6,5,4};//{9,7};//
-	//spacing between control points in grid
-	//d.o.f.: 2.8, 3.4, 4.3, 6.1(3.4)
-    
-    float label_quant[]={ 5,4,3,2,1};//{5,3};//
-	//quantisation of search space L, important: can only by integer so far!
-	float mind_step[]={ 3,3,2,2,1};//{1,1,1,1,1};//
     
 	int step1; int hw1; float quant1;
 	
@@ -173,7 +196,7 @@ int main (int argc, char * const argv[]) {
 	}
 	int m2,n2,o2,sz2;
 	int m1,n1,o1,sz1;
-	m2=m/grid_step[0]; n2=n/grid_step[0]; o2=o/grid_step[0]; sz2=m2*n2*o2;
+	m2=m/args.grid_spacing[0]; n2=n/args.grid_spacing[0]; o2=o/args.grid_spacing[0]; sz2=m2*n2*o2;
 	float* u1=new float[sz2]; float* v1=new float[sz2]; float* w1=new float[sz2];
 	float* u1i=new float[sz2]; float* v1i=new float[sz2]; float* w1i=new float[sz2];
 	for(int i=0;i<sz2;i++){		
@@ -193,9 +216,9 @@ int main (int argc, char * const argv[]) {
     float timeDataSmooth=0;
 	//==========================================================================================
 	//==========================================================================================
-	float* bench=new float[6*maxlevel];
-	for(int level=0;level<maxlevel;level++){
-        quant1=label_quant[level];
+
+    for(int level=0;level<args.levels;level++){
+        quant1=args.quantisation[level];
 		
         float prev=mind_step[max(level-1,0)];//max(min(label_quant[max(level-1,0)],2.0f),1.0f);
         float curr=mind_step[level];//max(min(label_quant[level],2.0f),1.0f);
@@ -210,8 +233,8 @@ int main (int argc, char * const argv[]) {
             timeMIND+=time2.tv_sec+time2.tv_usec/1e6-(time1.tv_sec+time1.tv_usec/1e6);
 		}
 		
-		step1=grid_step[level];
-		hw1=label_hw[level];
+		step1=args.grid_spacing[level];
+		hw1=args.search_radius[level];
 		
 		int len3=pow(hw1*2+1,3);
 		m1=m/step1; n1=n/step1; o1=o/step1; sz1=m1*n1*o1;
@@ -241,7 +264,7 @@ int main (int argc, char * const argv[]) {
 		timeMIND+=time2.tv_sec+time2.tv_usec/1e6-(time1.tv_sec+time1.tv_usec/1e6);
         cout<<"M"<<flush;
         gettimeofday(&time1, NULL);
-        dataCostCL((unsigned long*)im1b_mind,(unsigned long*)warped_mind,costall,m,n,o,len3,step1,hw1,quant1,alpha,randnum);
+        dataCostCL((unsigned long*)im1b_mind,(unsigned long*)warped_mind,costall,m,n,o,len3,step1,hw1,quant1,args.alpha,RAND_SAMPLES);
         gettimeofday(&time2, NULL);
 
 		timeData+=time2.tv_sec+time2.tv_usec/1e6-(time1.tv_sec+time1.tv_usec/1e6);
@@ -269,7 +292,7 @@ int main (int argc, char * const argv[]) {
 		timeMIND+=time2.tv_sec+time2.tv_usec/1e6-(time1.tv_sec+time1.tv_usec/1e6);
         cout<<"M"<<flush;
         gettimeofday(&time1, NULL);
-        dataCostCL((unsigned long*)im1_mind,(unsigned long*)warped_mind,costall,m,n,o,len3,step1,hw1,quant1,alpha,randnum);
+        dataCostCL((unsigned long*)im1_mind,(unsigned long*)warped_mind,costall,m,n,o,len3,step1,hw1,quant1,args.alpha,RAND_SAMPLES);
         gettimeofday(&time2, NULL);
 		timeData+=time2.tv_sec+time2.tv_usec/1e6-(time1.tv_sec+time1.tv_usec/1e6);
         cout<<"D"<<flush;
@@ -320,29 +343,41 @@ int main (int argc, char * const argv[]) {
 		
 	}
     
-    
-    writeOutput(flow,outputflow,sz1*3);
+    //WRITE OUTPUT DISPLACEMENT FIELD AND IMAGE
+    writeOutput(flow,outputflow.c_str(),sz1*3);
     warpAffine(warped1,im1,im1b,X,ux,vx,wx);
 	
     for(int i=0;i<sz;i++){
         warped1[i]+=thresholdM;
     }
     
-    //writeNifti(outputdef,warped1,header,m*n*o);
+    gzWriteNifti(outputfile,warped1,header,m,n,o,1);
+
     cout<<"SSD before registration: "<<SSD0<<" and after "<<SSD1<<"\n";
- 
-    short* segw=new short[sz];
-
-    warpAffineS(segw,seg2,X,ux,vx,wx);
-
     
-    
-    gzWriteSegment(argv[5],segw,header,m,n,o,1);
-    gzWriteNifti(argv[4],warped1,header,m,n,o,1);
+    // if SEGMENTATION of moving image is provided APPLY SAME TRANSFORM
+    if(args.segment){
+        short* seg2;
+        readNifti(args.moving_seg_file,seg2,header,M,N,O,P);
+        
+        short* segw=new short[sz];
+        fill(segw,segw+sz,0);
 
+        warpAffineS(segw,seg2,X,ux,vx,wx);
+        
+        
+        string outputseg;
+        outputseg.append(args.output_stem);
+        outputseg.append("_deformed_seg.nii.gz");
+        cout<<"outputseg "<<outputseg<<"\n";
+        
+
+        
+        gzWriteSegment(outputseg,segw,header,m,n,o,1);
+    }
     
 	cout<<"Finished. Total time: "<<timeALL<<" sec. ("<<timeDataSmooth<<" sec. for MIND+data+reg+trans)\n";
 	
 	
 	return 0;
-}*/
+}
