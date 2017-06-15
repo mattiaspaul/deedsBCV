@@ -43,7 +43,8 @@ void readNifti(string filestr,Type*& vol,char*& header,int& m,int& n,int& o,int&
     //
     char* filecharptr=new char[m*n*o*p*charbytes];
     //raw empty datapointers of all 'types'
-    unsigned char* ucharptr; float* floatptr; short* shortptr; int* intptr; double* doubleptr;
+    unsigned char* ucharptr; float* floatptr; short* shortptr;
+    unsigned short* ushortptr; int* intptr; double* doubleptr;
     //read input data values depending on datatype and convert to float
     //binary are read character by character, reinterpret_cast converts them
     //copy them into float* array afterwards
@@ -81,6 +82,13 @@ void readNifti(string filestr,Type*& vol,char*& header,int& m,int& n,int& o,int&
             doubleptr=reinterpret_cast<double*>(filecharptr);
             for(int i=0;i<m*n*o*p;i++){
                 vol[i]=doubleptr[i];
+            }
+            break;
+        case 512:
+            gzread(file,filecharptr,m*n*o*p*sizeof(unsigned short));
+            ushortptr=reinterpret_cast<unsigned short*>(filecharptr);
+            for(int i=0;i<m*n*o*p;i++){
+                vol[i]=ushortptr[i];
             }
             break;
         default:

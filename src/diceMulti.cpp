@@ -37,9 +37,14 @@ int main(int argc,char * const argv[]){
     vector<float> dice1;
 
     bool* countvol=new bool[sz];
+    
+    vector<short> found_label(segment1,segment1+sz);
+    sort(found_label.begin(),found_label.end());
+    found_label.erase(unique(found_label.begin(),found_label.end()),found_label.end());
+    
     int maxlabel=*max_element(segment1,segment1+sz);
-    for(int label=1;label<=maxlabel;label++){ //for all labels except background
-        
+    for(int i=1;i<found_label.size();i++){ //for all labels except background
+        int label=found_label[i];
         for(int i=0;i<sz;i++)
             countvol[i]=segment1[i]==label&segment2[i]==label;
         float unionval=count(countvol,countvol+sz,true);

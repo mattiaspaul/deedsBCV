@@ -297,6 +297,27 @@ int main (int argc, char * const argv[]) {
         printf("%+4.3f | %+4.3f | %+4.3f | %+4.3f \n",X[i],X[i+4],X[i+8],X[i+12]);
     }
     matfile.close();
+    
+    // if SEGMENTATION of moving image is provided APPLY SAME TRANSFORM
+    if(args.segment){
+        short* seg2;
+        readNifti(args.moving_seg_file,seg2,header,M,N,O,P);
+        
+        float* zero=new float[sz];
+        short* segw=new short[sz];
+        fill(segw,segw+sz,0);
+        
+        warpAffineS(segw,seg2,X,zero,zero,zero);
+        
+        
+        string outputseg;
+        outputseg.append(args.output_stem);
+        outputseg.append("_deformed_seg.nii.gz");
+        
+        
+        
+        gzWriteSegment(outputseg,segw,header,m,n,o,1);
+    }
   
     
 	cout<<"Finished. Total time: "<<timeALL<<" sec. ("<<timeDataSmooth<<" sec. for MIND+data+affine+trans)\n";
