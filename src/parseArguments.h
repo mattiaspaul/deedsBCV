@@ -157,7 +157,8 @@ void parseCommandLine(parameters& args,int argc, char * const argv[]){
     args.levels=maxlevel;
     args.segment=segment;
     args.affine=affine;
-    
+    args.rigid=rigid;
+
     args.grid_spacing.resize(maxlevel);
     args.search_radius.resize(maxlevel);
     args.quantisation.resize(maxlevel);
