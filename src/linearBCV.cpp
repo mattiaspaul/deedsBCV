@@ -304,6 +304,8 @@ int main (int argc, char * const argv[]) {
         readNifti(args.moving_seg_file,seg2,header,M,N,O,P);
         
         float* zero=new float[sz];
+        fill(zero,zero+sz,0.0f);
+
         short* segw=new short[sz];
         fill(segw,segw+sz,0);
         
