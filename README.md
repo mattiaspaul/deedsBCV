@@ -45,9 +45,10 @@ If you use this implementation or parts of it please cite:
  
  and
  
- "Towards Realtime Multimodal Fusion for Image- Guided Interventions using Self-Similarities"
- by Mattias P. Heinrich, Mark Jenkinson, Bartlomiej W. Papiez, Sir Michael Brady, and Julia A. Schnabel
- Medical Image Computing and Computer-Assisted Intervention - MICCAI 2013, LNCS 8149, Springer
+ "Multi-modal Multi-Atlas Segmentation using Discrete Optimisation and Self-Similarities"
+ by Mattias P. Heinrich, Oskar Maier and Heinz Handels
+ VISCERAL Challenge@ ISBI, Pages 27-30 2015
+ http://ceur-ws.org/Vol-1390/visceralISBI15-4.pdf
  
 ## Usage
 
