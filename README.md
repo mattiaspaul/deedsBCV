@@ -38,9 +38,10 @@ It is recommend to alos install the excellent c3d convert tool of ITK-Snap to pr
 
 If you use this implementation or parts of it please cite:
  
- “Non-parametric Discrete Registration with Convex Optimisation.”
- by Mattias P. Heinrich, Bartlomiej W. Papież, Julia A. Schnabel, Heinz Handels
- Biomedical Image Registration - WBIR 2014, LNCS 8454, Springer, pp 51-61
+ "MRF-Based Deformable Registration and Ventilation Estimation of Lung CT."
+ by Mattias P. Heinrich, M. Jenkinson, M. Brady and J.A. Schnabel
+ IEEE Transactions on Medical Imaging 2013, Volume 32, Issue 7, July 2013, Pages 1239-1248
+ http://dx.doi.org/10.1109/TMI.2013.2246577
  
  and
  
