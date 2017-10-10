@@ -34,6 +34,20 @@ make SLOW=1
 
 It is recommend to alos install the excellent c3d convert tool of ITK-Snap to preprocess images http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.C3D 
 
+## Citation
+
+If you use this implementation or parts of it please cite:
+ 
+ “Non-parametric Discrete Registration with Convex Optimisation.”
+ by Mattias P. Heinrich, Bartlomiej W. Papież, Julia A. Schnabel, Heinz Handels
+ Biomedical Image Registration - WBIR 2014, LNCS 8454, Springer, pp 51-61
+ 
+ and
+ 
+ "Towards Realtime Multimodal Fusion for Image- Guided Interventions using Self-Similarities"
+ by Mattias P. Heinrich, Mark Jenkinson, Bartlomiej W. Papiez, Sir Michael Brady, and Julia A. Schnabel
+ Medical Image Computing and Computer-Assisted Intervention - MICCAI 2013, LNCS 8149, Springer
+ 
 ## Usage
 
 ### Executables
