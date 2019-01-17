@@ -1,7 +1,7 @@
 SOURCE1=src/deedsBCV0.cpp
 SOURCE2=src/linearBCV.cpp
 SOURCE3=src/applyBCV.cpp
-SOURCE4=src/applyBCV.cpp
+SOURCE4=src/applyBCVfloat.cpp
 
 ifeq ($(SLOW),1)
 	OPT =-O
