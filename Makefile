@@ -1,6 +1,7 @@
 SOURCE1=src/deedsBCV0.cpp
 SOURCE2=src/linearBCV.cpp
 SOURCE3=src/applyBCV.cpp
+SOURCE4=src/applyBCV.cpp
 
 ifeq ($(SLOW),1)
 	OPT =-O
@@ -10,7 +11,7 @@ endif
 
 .PHONY: target
 
-all: linear deeds apply
+all: linear deeds apply applyFloat
 
 deeds: $(SOURCE1) Makefile
 	g++ $(SOURCE1) -I src -lz -o deedsBCV -std=c++11 $(OPT)
@@ -20,6 +21,9 @@ linear: $(SOURCE2) Makefile
 
 apply: $(SOURCE3) Makefile
 	g++ $(SOURCE3) -I src -lz -o applyBCV -std=c++11 $(OPT)
+
+applyFloat: $(SOURCE4) Makefile
+	g++ $(SOURCE4) -I src -lz -o applyBCVfloat -std=c++11 $(OPT)
 
 
 clean:
