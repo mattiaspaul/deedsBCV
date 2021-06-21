@@ -91,10 +91,10 @@ In case you do not want to creat a synapse.org account please see alternative ex
 
 ### 2) Resample example scans with c3d
 ```bash
-c3d img/img0002.nii.gz -resample-mm 2x2x2mm -region 0x0x10vox 180x140x190vox -origin-voxel 0x0x0vox -flip y -o img2_res.nii.gz
-c3d img/img0004.nii.gz -resample-mm 2x2x2mm -region 0x0x20vox 180x140x190vox -origin-voxel 0x0x0vox -pad 14x0x0vox 14x0x0vox -1024 -flip y -o img4_res.nii.gz
-c3d label/label0002.nii.gz -int 0 -resample-mm 2x2x2mm -region 0x0x10vox 180x140x190vox -origin-voxel 0x0x0vox -flip y -o seg2_res.nii.gz
-c3d label/label0004.nii.gz -int 0 -resample-mm 2x2x2mm -region 0x0x20vox 180x140x190vox -origin-voxel 0x0x0vox -pad 14x0x0vox 14x0x0vox  0 -flip y -o seg4_res.nii.gz
+c3d img/img0002.nii.gz -flip y -resample-mm 2x2x2mm -region 0x0x10vox 180x140x190vox -origin-voxel 0x0x0vox -o img2_res.nii.gz
+c3d img/img0004.nii.gz -flip y -resample-mm 2x2x2mm -region 0x0x20vox 180x140x190vox -origin-voxel 0x0x0vox -pad 14x0x0vox 14x0x0vox -1024 -o img4_res.nii.gz
+c3d label/label0002.nii.gz -flip y -int 0 -resample-mm 2x2x2mm -region 0x0x10vox 180x140x190vox -origin-voxel 0x0x0vox -o seg2_res.nii.gz
+c3d label/label0004.nii.gz -flip y -int 0 -resample-mm 2x2x2mm -region 0x0x20vox 180x140x190vox -origin-voxel 0x0x0vox -pad 14x0x0vox 14x0x0vox  0 -o seg4_res.nii.gz
 ```
 
 Please, consider to check the output visually. Alternatively, you can find the programm preprocessAbdomen.cpp in src, which performs exactly the same resampling cropping that I have used for the registration challenge. To potentially improve the accuracy at the cost of longer run-times a smaller voxel spacing would be advisable, when increasing the grid-spacing or step quantisation accordingly.
