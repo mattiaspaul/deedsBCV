@@ -32,7 +32,23 @@ The code requires a Unix-based system (Linux, OS X or Ubuntu-Bash in Win10), a g
 make SLOW=1
 ```
 
-It is recommend to alos install the excellent c3d convert tool of ITK-Snap to preprocess images http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.C3D 
+### For Apple M1/ARM64
+
+Download and install miniconda3 
+Change to /path/to/miniconda3/bin 
+
+From /path/to/miniconda3/bin run 
+```conda install llvm-openmp```   
+
+Change to /path/to/deedsBCV
+```
+export LDFLAGS="-L/path/to/miniforge3/lib/" 
+export DYLD_LIBRARY_PATH="/path/to/miniforge3/lib/"
+clang++ $LDFLAGS -lomp -lz src/deedsBCV0.cpp -std=c++11 -O3 -arch=arm64-apple-darwin20.1.0 -Xclang -fopenmp -o deedsBCVamp 
+```
+
+### c3d
+It is recommend to also install the excellent c3d convert tool of ITK-Snap to preprocess images http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.C3D 
 
 ## Citation
 
