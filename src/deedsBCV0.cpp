@@ -9,7 +9,9 @@
 #include <functional>
 #include <string.h>
 #include <sstream>
-#include <x86intrin.h>
+#ifdef __i386 || #ifdef _M_I86 || #ifdef __x86_64 || #ifdef M_X64
+    #include <x86intrin.h>
+#endif
 #include <pthread.h>
 #include <thread>
 #include <cstddef>   
