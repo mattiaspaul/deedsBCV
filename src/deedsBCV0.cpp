@@ -9,7 +9,7 @@
 #include <functional>
 #include <string.h>
 #include <sstream>
-#ifdef __i386 || #ifdef _M_I86 || #ifdef __x86_64 || #ifdef M_X64
+#if defined(__i386) || defined(_M_I86) || defined(__x86_64) || defined(M_X64)
     #include <x86intrin.h>
 #endif
 #include <pthread.h>
