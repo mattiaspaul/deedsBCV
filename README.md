@@ -32,12 +32,12 @@ The code requires a Unix-based system (Linux, OS X or Ubuntu-Bash in Win10), a g
 make SLOW=1
 ```
 
-### For Apple M1/ARM64
+### For Apple Silicon (arm64)
 
 Download and install miniconda3 
-Change to /path/to/miniconda3/bin 
+Change to /path/to/miniforge3/bin 
 
-From /path/to/miniconda3/bin run 
+From /path/to/miniforge3/bin run 
 ```conda install llvm-openmp```   
 
 Change to /path/to/deedsBCV
