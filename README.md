@@ -22,14 +22,14 @@ The following table lists a subset of the results in terms of Dice overlap (or m
 The average run-time on a dual-core laptop is around 60 seconds for the nonlinear registration of images with 8 million voxels *on current desktop multi-core or M1 ARM chips you should expect 15-30 seconds*. 
 
 ## Performance on public datasets
-deeds has been extensively evaluated on the Learn2Reg 2020 challenge: https://learn2reg.grand-challenge.org/Learn2Reg2020/ reaching the second rank in Task 1 (Ultrasound-MRI brain registration, TRE around 3mm), Task 2 (intra-patient Lung CT registration , TRE around 2mm) and Task 3 (inter-patient abdominal registration, Dice >50% for 13 small labels). The scores take the longer runtimes into consideration and it often outperforms learning based methods based on robustness and accuracy.
+deeds has been extensively evaluated on the **Learn2Reg 2020** challenge: https://learn2reg.grand-challenge.org/Learn2Reg2020/ reaching the **second rank in Task 1** (Ultrasound-MRI brain registration, TRE around 3mm), **Task 2** (intra-patient Lung CT registration , TRE around 2mm) **and Task 3** (inter-patient abdominal registration, Dice >50% for 13 small labels). The scores take the longer runtimes into consideration and it often outperforms learning based methods based on robustness and accuracy.
 For the Learn2Reg 2021 challenge Task 1 on **abdominal registration inter-patient results** on the additionally provided CHAOS / BCV datasets (see https://learn2reg.grand-challenge.org/Datasets/ "additional auxiliary data") are included in the following table (note: for CHAOS intra-modal this does not include linear pre-registration, for cross-modal the CT dataset is BCV not CHAOS), you can expect much higher performance for intra-patient alignment: 
 | Registration  | before (intra-modal MR) | **deeds** | before (cross-modal) | **deeds**
 | ------------- | --------- | --------- | --------- |  --------- | 
 | Spleen | 32.3% | **61.9%** | 20.2% | **46.9%** |
 | Left Kidney | 36.6% | **83.3%** | 10.0% | **62.8%** |
 | Right Kidney | 39.2% | **81.9%** | 18.8% | **65.2%** | 
-| Liver | 67.3% | **82.9%** | 57.7% | **79.5%%** |
+| Liver | 67.3% | **82.9%** | 57.7% | **79.5%** |
 | Average | 43.9% | **77.5%** | 26.7% | **63.6%** |
 
 ## Installation
