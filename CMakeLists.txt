@@ -10,3 +10,6 @@ target_link_libraries(linear -lz)
 
 add_executable(deeds src/deedsBCV0.cpp)
 target_link_libraries(deeds -lz)
+
+add_executable(applyBCV src/applyBCV.cpp)
+target_link_libraries(applyBCV -lz)
