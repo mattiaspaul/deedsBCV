@@ -9,7 +9,6 @@
 #include <string.h>
 #include <map>
 #include <sstream>
-#include <x86intrin.h>
 #include <pthread.h>
 #include <thread>
 #include "zlib.h"
