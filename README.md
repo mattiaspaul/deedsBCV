@@ -46,17 +46,21 @@ make SLOW=1
 
 ### For Apple Silicon (arm64)
 
-Download and install miniconda3 
-Change to /path/to/miniforge3/bin 
-
-From /path/to/miniforge3/bin run 
-```conda install llvm-openmp```   
-
-Change to /path/to/deedsBCV
+Install `brew`.
+Install `libomp` via `brew`.
 ```
-export LDFLAGS="-L/path/to/miniforge3/lib/" 
-export DYLD_LIBRARY_PATH="/path/to/miniforge3/lib/"
-clang++ $LDFLAGS -lomp -lz src/deedsBCV0.cpp -std=c++11 -O3 -arch=arm64-apple-darwin20.1.0 -Xclang -fopenmp -o deedsBCVamp 
+brew install libomp
+```
+
+For compilers to find libomp, set
+```
+export LDFLAGS=-L/opt/homebrew/opt/libomp/lib
+export CPPFLAGS=-I/opt/homebrew/opt/libomp/include
+```
+
+In /path/to/deedsBCV, compile
+```
+clang++ $LDFLAGS -lomp -lz src/deedsBCV0.cpp -std=c++11 -O3 -Xclang -fopenmp -o deedsBCVamp
 ```
 
 ### c3d
